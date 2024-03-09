@@ -1,0 +1,6 @@
+# Ignore models directory
+models/
+
+# Checkpoints
+.ipynb_checkpoints/
+
