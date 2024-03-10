@@ -4,6 +4,8 @@
 
 The task at hand was to develop a computer vision model for classifying skin lesions as either benign or malignant (cancerous). This is a binary classification problem with potential applications in the medical field, assisting in the early detection of skin cancer.
 
+The most important and final notebook here is `final_data_augmentation.ipynb`. It contains the final implementation, which incorporates data augmentation techniques. The notebook loads the previously trained models, evaluates their performance on the test set, and calculates various metrics (accuracy, precision, recall, and F1-score) for each individual model and ensemble approaches.
+
 ## Dataset
 
 The dataset consisted of images of skin lesions, divided into two categories: benign and malignant. The images were further split into train, test, and validation sets. The preprocessing steps involved converting the images to different color spaces (BGR, HSV, LAB, YCbCr, and Grayscale) and applying techniques like Gaussian blurring and Contrast Limited Adaptive Histogram Equalization (CLAHE) to enhance the image quality.
