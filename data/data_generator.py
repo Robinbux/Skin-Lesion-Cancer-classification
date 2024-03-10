@@ -6,6 +6,7 @@ from enum import Enum
 import numpy as np
 from imgaug import augmenters as iaa
 from tensorflow.keras.utils import Sequence
+from sklearn.utils import shuffle
 
 
 class DatasetType(Enum):
@@ -28,7 +29,8 @@ class ColorSpace(Enum):
 
 
 class SkinLesionDataSequence(Sequence):
-    def __init__(self, base_dir, dataset_type, color_space, batch_size=32, normalize=True, augment=False, augmentation_factor=3):
+    def __init__(self, base_dir, dataset_type, color_space, batch_size=32,
+                 normalize=True, augment=False, augmentation_factor=3):
         self.base_dir = base_dir
         self.dataset_type = dataset_type
         self.color_space = color_space
@@ -49,7 +51,8 @@ class SkinLesionDataSequence(Sequence):
             SkinLesionType.Benign: os.path.join(self.base_dir, self.dataset_type.value,
                                                 f"{SkinLesionType.Benign.value}Preprocessed",
                                                 self.color_space.value),
-            SkinLesionType.Malignant: os.path.join(self.base_dir, self.dataset_type.value,
+            SkinLesionType.Malignant: os.path.join(self.base_dir,
+                                                   self.dataset_type.value,
                                                    f"{SkinLesionType.Malignant.value}Preprocessed",
                                                    self.color_space.value)
         }
@@ -60,6 +63,7 @@ class SkinLesionDataSequence(Sequence):
                 if img_file.endswith('.jpg') or img_file.endswith('.jpeg'):
                     img_files.append(os.path.join(path, img_file))
                     labels.append(0 if category == SkinLesionType.Benign else 1)
+        img_files, labels = shuffle(img_files, labels, random_state=42)
         return img_files, labels
 
     def __len__(self):
@@ -68,7 +72,6 @@ class SkinLesionDataSequence(Sequence):
         return math.ceil(total_images / self.batch_size)
 
     def __getitem__(self, idx):
-        # Adjust the start and end index to account for the augmented images
         start_idx = (idx * self.batch_size) // self.augmentation_factor
         end_idx = ((
                                idx + 1) * self.batch_size + self.augmentation_factor - 1) // self.augmentation_factor
@@ -76,49 +79,37 @@ class SkinLesionDataSequence(Sequence):
         batch_files = self.img_files[start_idx:end_idx]
         batch_labels = self.labels[start_idx:end_idx]
 
-        # Load and optionally augment images
         batch_images = []
-        for file in batch_files:
+        batch_labels_new = []
+        for file, label in zip(batch_files, batch_labels):
             image = self.load_image(file)
             if self.augment:
                 # Create augmented versions of the image
+                new_images = [image]
                 augmented_images = [self.augmenter.augment_image(image) for _ in
-                                    range(self.augmentation_factor)]
-                batch_images.extend(augmented_images)
+                                    range(self.augmentation_factor - 1)]
+                new_images.extend(augmented_images)
+                batch_images.extend(new_images)
+                batch_labels_new.extend([label] * self.augmentation_factor)
             else:
                 batch_images.append(image)
+                batch_labels_new.append(label)
 
         # Ensure the batch size is correct, especially for the last batch
         batch_images = batch_images[:self.batch_size]
-        batch_labels = np.repeat(batch_labels, self.augmentation_factor)[
-                       :self.batch_size]
+        batch_labels_new = batch_labels_new[:self.batch_size]
 
         if self.normalize:
             batch_images = [self.normalize_image(img) for img in batch_images]
 
-        return np.array(batch_images), np.array(batch_labels)
+        return np.array(batch_images), np.array(batch_labels_new)
 
     def load_image(self, image_path):
         image = cv2.imread(image_path)
         return image
 
-    def augment_image(self, image):
-        image = np.expand_dims(image, 0)
-        image = next(self.augmentation.flow(image, batch_size=1))[0]
-        return image
-
-    def load_and_process_image(self, image_path):
-        image = cv2.imread(image_path)
-        image = cv2.resize(image, (224, 224))  # Ensure image is resized to 224x224
-        if self.augment:
-            image = self.augment_image(image)
-        if self.normalize:
-            image = self.normalize_image(image)
-        return image
-
     def normalize_image(self, image):
-        MinI = np.min(image)
-        MaxI = np.max(image)
-        I_norm = ((image - MinI) * (2 / (MaxI - MinI))) - 1
-        return I_norm
-
+        minI = np.min(image)
+        maxI = np.max(image)
+        i_norm = ((image - minI) * (2 / (maxI - minI))) - 1
+        return i_norm

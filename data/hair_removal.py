@@ -1,3 +1,6 @@
+"""Removing the hair this way somewhat worked, but it made the image quality too bad
+and lowered the performance this way. So it's not being used in the final model."""
+
 import cv2
 import os
 from tqdm import tqdm

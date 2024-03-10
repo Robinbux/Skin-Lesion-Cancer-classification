@@ -75,7 +75,6 @@ jupyterlab_widgets==3.0.10
 keras==2.15.0
 kiwisolver==1.4.5
 lazy_loader==0.3
-lczero-bindings @ git+https://github.com/LeelaChessZero/lc0.git@37930b63eb1c57045e43d65138fa685cebd0b806
 libclang==16.0.6
 llvmlite==0.42.0
 lmdb==1.4.1
@@ -125,7 +124,6 @@ PyYAML==6.0.1
 pyzmq==25.1.2
 qtconsole==5.5.1
 QtPy==2.4.1
--e git+https://github.com/xinntao/Real-ESRGAN.git@5ca1078535923d485892caee7d7804380bfc87fd#egg=realesrgan
 referencing==0.33.0
 requests==2.31.0
 requests-oauthlib==1.3.1

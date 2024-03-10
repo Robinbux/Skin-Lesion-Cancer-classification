@@ -1,5 +1,6 @@
 # Ignore models directory
 models/
+models_final_augmentation/
 
 # Checkpoints
 .ipynb_checkpoints/

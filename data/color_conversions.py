@@ -49,8 +49,6 @@ def process_images_in_directory(input_directory, output_directory):
     image_files = [f for f in os.listdir(input_directory) if
                    os.path.isfile(os.path.join(input_directory, f))]
 
-    color_spaces = ['BGR', 'HSV', 'LAB', 'YCbCr', 'Greyscale']
-
     for image_file in tqdm(image_files, desc="Processing Images"):
         input_path = os.path.join(input_directory, image_file)
         converted_images = preprocess_and_convert_image(input_path)
