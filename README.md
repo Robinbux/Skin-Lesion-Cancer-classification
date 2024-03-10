@@ -35,7 +35,6 @@ Both ensemble methods achieved similar results, with an accuracy of around 94% o
 
 ## Results
 The notebook final_data_augmentation.py presents the final results, including a table summarizing the performance metrics for individual models and ensemble approaches. The best overall score was around 94% accuracy, achieved by both the Simple Average Ensemble and the Bayesian Model Averaging Ensemble.
-Additionally, the notebook mentions that attempts were made to remove hair from the images, but this step worsened the overall score.
 
 | Model                       | Accuracy | Precision | Recall | F1       |
 |-----------------------------|----------|-----------|--------|----------|
